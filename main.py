@@ -2,8 +2,6 @@ import re
 import random
 from datetime import datetime
 
-#training_set='WikiLeaks is an international non-profit organisation that publishes secret information, news leaks, and classified media provided by anonymous sources.'
-
 alphabets='’abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 punctuations='\'(",.;)”“'
 
@@ -37,7 +35,10 @@ follow={}
 def construct(n=1):   #n sized histogram
     global follow
     tokens=tokenize(input('Enter training set directory: '))
-    keys=list(set(tokens))
+    keys=[]
+    for i in range(len(tokens)-n+1):
+        keys.append(' '.join(tokens[i:i+n]))
+    keys=list(set(keys))
     dictogram={}
     for i in keys:
         dictogram[i]=tokens.count(i)
@@ -47,11 +48,11 @@ def construct(n=1):   #n sized histogram
 
     for i in range(len(tokens)):
         if i+n<len(tokens):
-            follow[tokens[i]][tokens[i+1]]=0
+            follow[tokens[i]][' '.join(tokens[i+1:i+n])]=0
     
     for i in range(len(tokens)):
         if i+n<len(tokens):
-            follow[tokens[i]][tokens[i+1]]+=1 #Change 2nd [i+1] to [i+2] for 2-histogram here and in prev loop
+            follow[tokens[i]][' '.join(tokens[i+1:i+n])]+=1 #Change 2nd [i+1] to [i+2] for 2-histogram here and in prev loop
 
     follow['--START--']={}
     follow['--START--']=follow['.']
@@ -64,7 +65,11 @@ def printf(string,n=1):
     #elif '.' in follow[string].keys(): #Added commit
      #   print('.')
       #  ct+=1
-    if True: #elif len(list(follow[string].keys()))>1:
+    if string in follow:
+        if string in '\'(",.;)”“':
+            print('',end=' ')
+        else:
+            print('',end='')
         follow_words=list(follow[string].keys())
         follow_occur=list(follow[string].values())
         
@@ -79,7 +84,7 @@ def printf(string,n=1):
             if random_ind>=cum_probs[i] and random_ind<cum_probs[i+1]:
                 ind=i
         
-        print(follow_words[ind],end=' ')
+        print(follow_words[ind],end='')
         #print('\n',str(follow[string].keys()).split(", ")[2].strip('\''))
         printf(follow_words[ind])
 
