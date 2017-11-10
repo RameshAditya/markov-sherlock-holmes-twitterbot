@@ -58,25 +58,26 @@ def construct(n=1):   #n sized histogram
     follow['--START--']=follow['.']
     follow['.']['--END--']=50
 
-def printf(string,n=1):
+def transition(string,n=1,depth=1):
     #if string not in follow:
      #   print('\n-X-\n')
       #  return
-    #elif '.' in follow[string].keys(): #Added commit
-     #   print('.')
+    if depth>50 and string in follow: #Added commit
+        print('.')
       #  ct+=1
+        return
     if string in follow:
         if string in '\'(",.;)”“':
             print('',end=' ')
         else:
-            print('',end='')
+            print('',end=' ')
         follow_words=list(follow[string].keys())
         follow_occur=list(follow[string].values())
         
         cum_probs=[follow_occur[0]/sum(follow_occur)]
         for i in range(1,len(follow_occur)):
             cum_probs.append(cum_probs[i-1]+ follow_occur[i]/sum(follow_occur))
-        
+        cum_probs.append(1)
         random_ind=random.randint(0,len(follow[string].keys())-1)
         random_ind/=sum(follow_occur)
         ind=0
@@ -86,12 +87,14 @@ def printf(string,n=1):
         
         print(follow_words[ind],end='')
         #print('\n',str(follow[string].keys()).split(", ")[2].strip('\''))
-        printf(follow_words[ind])
+        transition(follow_words[ind],n,depth+1)
+    else:
+        transition('.',n,depth+1)
 
 def main():
     print("Enter size of histogram: ")
     n=int(input())
     construct(n)
-    printf('.',n)
+    transition('.',n)
 
 main()
