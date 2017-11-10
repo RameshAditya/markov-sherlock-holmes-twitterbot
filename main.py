@@ -23,7 +23,10 @@ def tokenize(training_set_dir):
         elif i in punctuations:
             tok.append(buf)
             buf=''
-            tok.append(i)
+            if i=='”':
+                tok.append(i+'\n')
+            else:
+                tok.append(i)
         else:
             continue
     tokens=[]
@@ -58,17 +61,18 @@ def construct(n=1):   #n sized histogram
     follow['--START--']=follow['.']
     follow['.']['--END--']=50
 
-def transition(string,n=1,depth=1):
+def transition(string,n=1,depth=1,limit=50):
     #if string not in follow:
      #   print('\n-X-\n')
       #  return
-    if depth>50 and string in follow: #Added commit
+    if depth>limit and string in follow: #Added commit
         print('.')
       #  ct+=1
         return
     if string in follow:
         if string in '\'(",.;)”“':
             print('',end=' ')
+        
         else:
             print('',end=' ')
         follow_words=list(follow[string].keys())
@@ -87,14 +91,15 @@ def transition(string,n=1,depth=1):
         
         print(follow_words[ind],end='')
         #print('\n',str(follow[string].keys()).split(", ")[2].strip('\''))
-        transition(follow_words[ind],n,depth+1)
+        transition(follow_words[ind],n,depth+1,limit)
     else:
-        transition('.',n,depth+1)
+        transition('.',n,depth+1,limit)
 
 def main():
     print("Enter size of histogram: ")
     n=int(input())
+    depth_limit=int(input('Enter recursive depth: '))
     construct(n)
-    transition('.',n)
+    transition('.',n,1,depth_limit)
 
 main()
