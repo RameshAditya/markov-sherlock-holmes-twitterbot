@@ -9,4 +9,6 @@ NOTE: Works well for generating small sentences (albeit sometimes meaningless), 
 
 * Bad news is, it usually loses overall context after every sentence (or full stop) and sometimes mid-sentence too, due to the massive volume of the training set.
 
-Probably would work best for projects like *"What would X tweet next?"*
+~Probably would work best for projects like *"What would X tweet next?"*~
+
+Update: I have decided to do just that, to pick up the basics of text mining with Python, so stay tuned for future updates.
