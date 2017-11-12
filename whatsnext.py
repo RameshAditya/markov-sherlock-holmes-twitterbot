@@ -6,38 +6,42 @@ from datetime import datetime
 alphabets='’abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 punctuations='\'(",.;)”“'
 
+#Function to tokenize the training set -- takes in a parameter, the directory of the txt file.
+#Returns a list of tokens extracted from training set
 def tokenize(training_set_dir):
-    tok=[]
-    buf=''
-    training_set=''
-    with open(training_set_dir,'r') as f:
-        for words in f:
-            if len(words)>0:
-                training_set+=words
-    #Tokenizing
-    for i in training_set:
-        if i==' ':
-            if len(buf)>0 and buf!=' ' and buf!='':
-                tok.append(buf)
-            buf=''
-        elif i in alphabets:
-            buf+=i
-        elif i in punctuations:
-            tok.append(buf)
-            buf=''
-            if i=='”':
-                tok.append(i+'\n')
+    tok=[]                                                              #initialize temporary token list
+    buf=''                                                              #initialize buffer string
+    training_set=''                                                     #initialize string to store read in text
+    with open(training_set_dir,'r') as f:                               #open file
+        for words in f:                                                 #iterate over file
+            if len(words)>0:                                            #if its a valid word
+                training_set+=words                                     #append it to training set string
+    
+    for i in training_set:                                              #iterate over training set string
+        if i==' ':                                                      #if currently at a space
+            if len(buf)>0 and buf!=' ' and buf!='':                     #if buffer string is a valid word
+                tok.append(buf)                                         #append to token list
+            buf=''                                                      #reassign buf as empty
+        elif i in alphabets:                                            #else if its an alphabet
+            buf+=i                                                      #concatenate to buffer string
+        elif i in punctuations:                                         #else if its a punctuation
+            tok.append(buf)                                             #append to token list
+            buf=''                                                      #reset buf
+            if i=='”':                                                  #if its a closing quote
+                tok.append(i+'\n')                                      #add new line symbol after it
             else:
-                tok.append(i)
+                tok.append(i)                                           #else dont
         else:
-            continue
-    tokens=[]
-    for i in tok:
-        if i!='' and i!='”' and i!='“' and i!='”\n':
-            tokens.append(i)
-    return tokens
+            continue                                                    #else go to next word
+    tokens=[]                                                           #initialize final token list
+    for i in tok:                                                       #iterate over temporary token list
+        if i!='' and i!='”' and i!='“' and i!='”\n':                    #if its a valid string
+            tokens.append(i)                                            #append to final tokens
+    return tokens                                                       #return tokens
 follow={}
-def construct(n=1):   #n sized histogram
+
+
+def construct(n=1):                                                     #n sized histogram
     global follow
     tokens=tokenize(input('Enter training set directory: '))
     keys=[]
