@@ -1,8 +1,8 @@
 import re
 import random
 from datetime import datetime
-FIX RANDOM FUNCTION
-READJUST WEIGHTS AFTER PRINTING
+#FIX RANDOM FUNCTION
+#READJUST WEIGHTS AFTER PRINTING
 alphabets='’abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 punctuations='\'(",.;)”“'
 
