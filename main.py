@@ -1,7 +1,8 @@
 import re
 import random
 from datetime import datetime
-
+FIX RANDOM FUNCTION
+READJUST WEIGHTS AFTER PRINTING
 alphabets='’abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 punctuations='\'(",.;)”“'
 
@@ -11,7 +12,8 @@ def tokenize(training_set_dir):
     training_set=''
     with open(training_set_dir,'r') as f:
         for words in f:
-            training_set+=words
+            if len(words)>0:
+                training_set+=words
     #Tokenizing
     for i in training_set:
         if i==' ':
@@ -31,7 +33,7 @@ def tokenize(training_set_dir):
             continue
     tokens=[]
     for i in tok:
-        if i!='':
+        if i!='' and i!='”' and i!='“' and i!='”\n':
             tokens.append(i)
     return tokens
 follow={}
@@ -70,11 +72,13 @@ def transition(string,n=1,depth=1,limit=50):
       #  ct+=1
         return
     if string in follow:
+        '''
         if string in '\'(",.;)”“':
-            print('',end=' ')
+            print('',end='')
         
         else:
-            print('',end=' ')
+            print('',end='')
+        '''
         follow_words=list(follow[string].keys())
         follow_occur=list(follow[string].values())
         
@@ -88,16 +92,25 @@ def transition(string,n=1,depth=1,limit=50):
         for i in range(len(cum_probs)-1):
             if random_ind>=cum_probs[i] and random_ind<cum_probs[i+1]:
                 ind=i
-        
-        print(follow_words[ind],end='')
+                break
+
+        '''
+        if follow_words[ind] in '\'(",.;)”“':
+            print(follow_words[ind],end=' ')
+        else:
+            print(follow_words[ind],end=' ')
+        '''
+
+        print(follow_words[ind],end=' ')
         #print('\n',str(follow[string].keys()).split(", ")[2].strip('\''))
         transition(follow_words[ind],n,depth+1,limit)
     else:
         transition('.',n,depth+1,limit)
 
 def main():
-    print("Enter size of histogram: ")
+    print("Enter size of histogram: ",end='')
     n=int(input())
+    n+=1
     depth_limit=int(input('Enter recursive depth: '))
     construct(n)
     transition('.',n,1,depth_limit)
