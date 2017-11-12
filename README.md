@@ -1,6 +1,6 @@
 # Markov Models and Word Prediction
 
-####This is a markov model implemented manually that probabilistically predicts the consequent word by using historically validated data, and leveraging nested dictionaries.
+#### This is a markov model implemented manually that probabilistically predicts the consequent word by using historically validated data, and leveraging nested dictionaries.
 --------------------------------------------------------------------
 
 NOTE: Works well for generating small sentences (albeit sometimes meaningless), and not so well for paragraphs or pages. Best when trained over a huge corpus.
