@@ -1,14 +1,17 @@
 import re
 import random
 from datetime import datetime
-
 #NOTE:
 #FIX RANDOM FUNCTION
 #READJUST WEIGHTS AFTER PRINTING
+#ADD BACKWARD N TOKENIZATION TOO
 
 #Basic string declarations
 alphabets='’abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 punctuations='\'(",.;)”“'
+
+#Declaration of dictionary 'follow' -- stores what string(value) follows another string(key)
+follow={}
 
 #Function to tokenize the training set -- takes in a parameter, the directory of the txt file.
 #Returns a list of tokens extracted from training set
@@ -44,8 +47,6 @@ def tokenize(training_set_dir):
     return tokens                                                           #return tokens
 
 
-#Declaration of dictionary 'follow' -- stores what string(value) follows another string(key)
-follow={}
 
 #Function to construct the n-token follow dictionary
 #returns a dictionary storing which words follow which words and how many times they do so
@@ -101,12 +102,11 @@ def transition(string,n=1,depth=1,limit=50):
     else:
         transition('.',n,depth+1,limit)
 
-def main():
-    print("Enter size of histogram: ",end='')
-    n=int(input())
+def run():
+    n=int(input("Enter size of histogram: "))
     n+=1
     depth_limit=int(input('Enter recursive depth: '))
     construct(n)
     transition('.',n,1,depth_limit)
 
-main()
+#run()
