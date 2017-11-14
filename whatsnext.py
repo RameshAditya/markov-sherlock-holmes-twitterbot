@@ -63,22 +63,26 @@ def construct(n=1):                                                         #loo
     #    dictogram[i]=tokens.count(i)                                       #REDUNDANT
     
     for i in range(len(tokens)):                                            #Iterate over tokens
-        follow[tokens[i]]={}                                                #initialize follow's keys
+        if i+n<len(tokens):
+            for j in range(0,n):
+                follow[' '.join(tokens[i+j:i+n])]={}                          #initialize follow's keys
 
     for i in range(len(tokens)):                                            #Re-iterate over tokens
         if i+n<len(tokens):                                                 #if n-tokens ahead of current point
-            follow[tokens[i]][' '.join(tokens[i+1:i+n])]=0                  #initialize dictionary value to zero
+            for j in range(0,n):
+                follow[' '.join(tokens[i+j:i+n])][tokens[i+n]]=0                  #initialize dictionary value to zero
     
     for i in range(len(tokens)):                                            #Over all tokens
         if i+n<len(tokens):                                                 #if n-tokens ahead
-            follow[tokens[i]][' '.join(tokens[i+1:i+n])]+=1                 #increment frequency of occurrences
-
-    follow['--START--']={}                                                  #Assign starting point same as follow of full stop
-    follow['--START--']=follow['.']
-    follow['.']['--END--']=50                                               #Weight the probability of ending the statement higher
+            for j in range(0,n):
+                follow[' '.join(tokens[i+j:i+n])][tokens[i+n]]+=1                 #increment frequency of occurrences
+    #print(tokens[:20])
+    #follow['--START--']={}                                                  #Assign starting point same as follow of full stop
+    #follow['--START--']=follow['.']
+    #follow['.']['--END--']=50                                               #Weight the probability of ending the statement higher
 
 def transition(string,n=1,depth=1,limit=50):
-    if depth>limit and string in follow:
+    if depth>limit: # and string in follow:
         print('.')
         return
     if string in follow:
@@ -86,8 +90,10 @@ def transition(string,n=1,depth=1,limit=50):
         follow_occur=list(follow[string].values())
         
         cum_probs=[follow_occur[0]/sum(follow_occur)]
+
         for i in range(1,len(follow_occur)):
-            cum_probs.append(cum_probs[i-1]+ follow_occur[i]/sum(follow_occur))
+            cum_probs.append(cum_probs[i-1]+follow_occur[i]/sum(follow_occur))
+
         cum_probs.append(1)
         random_ind=random.randint(0,len(follow[string].keys())-1)
         random_ind/=sum(follow_occur)
@@ -98,15 +104,31 @@ def transition(string,n=1,depth=1,limit=50):
                 break
 
         print(follow_words[ind],end=' ')
-        transition(follow_words[ind],n,depth+1,limit)
+        ct=0
+        i=0
+
+        while i<(len(string)):
+            #print('inside fn',' '.join(string.split(" ")[i:n]))
+            if ' '.join(string.split(" ")[i:])+follow_words[ind] in list(follow.keys()):
+                ct=1
+                break
+            i+=1
+            
+        transition(' '.join(string.split(" ")[i:])+follow_words[ind],n,depth+1,limit)
+        #if i==len(string):
+        #    transition(list(follow.keys())[random.randint(0,len(follow.keys())-1)])
+        #if not ct:
+         #   print("Error")
     else:
-        transition('.',n,depth+1,limit)
+        print("----")
+        transition(list(follow.keys())[random.randint(0,len(list(follow.keys()))-1)],n,1,limit)
 
 def run():
     n=int(input("Enter size of histogram: "))
-    n+=1
+    #n+=1
     depth_limit=int(input('Enter recursive depth: '))
     construct(n)
-    transition('.',n,1,depth_limit)
-
+    #transition(list(follow.keys())[random.randint(0,len(list(follow.keys()))-1)],n,1,depth_limit)
+    print(list(follow.keys())[0],end=' ')
+    transition(list(follow.keys())[random.randint(0,len(follow.keys())-1)],n,1,depth_limit)
 #run()
