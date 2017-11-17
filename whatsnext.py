@@ -2,6 +2,9 @@ import re
 import random
 from datetime import datetime
 import time as time
+import tweepy
+import csv
+
 #Basic string declarations
 alphabets='’abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 punctuations='\'(",;)”“'
@@ -17,6 +20,14 @@ def millis():
 
 #Function to tokenize the training set -- takes in a parameter, the directory of the txt file.
 #Returns a list of tokens extracted from training set
+
+
+#Twitter tweepy stuff
+auth=tweepy.OAuthHandler('YyOFVAjYklqyXXXXXXXXX','XXXXXXXXXXXXXXXXXXXXXXxqIiPkrXWhbQMrDDYfJB')
+auth.set_access_token('9249194698XXXXXXXXXXXXXXXXXXXXXf','RXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXHnPNBppR0UbheKf')
+
+api=tweepy.API(auth)
+
 
 def tokenize(training_set_dir):
     tok=[]                                                                  #initialize temporary token list
@@ -47,7 +58,7 @@ def tokenize(training_set_dir):
 
 def construct(n=1):                                                         #look n-tokens ahead
     global follow                                                           #reference the global dictionary for internal use
-    tokens=tokenize(input('Enter training set directory: '))                #obtain tokens
+    tokens=tokenize('A:/markov.txt')                                        #obtain tokens
     keys=[]                                                                 #init keys of follow
     for i in range(len(tokens)-n+1):                                        #generate keys
         keys.append(' '.join(tokens[i:i+n]))
@@ -104,22 +115,30 @@ def transition(string,order=1,depth=1,limit=50):                                
 
                                                                                 #If current token does not exist, exception handle
     else:
-        transition(list(follow.keys())[random.randint(0,len(list(follow.keys()))-1)],n,1,limit)
+        transition(list(follow.keys())[millis() % len(follow.keys())],order,1,limit)
 
 #Function to execute the above functions
 
 def run():
     final_output=''                                                             #Final string
-    n=int(input("Enter order: "))                                               #Obtain order of histogram
-    depth_limit=int(input('Enter maximum depth of recursion: '))                #Obtain depth limit of recursion
+    #n=int(input("Enter order: "))                                               #Obtain order of histogram
+    n=1
+    depth_limit=500
+    #depth_limit=int(input('Enter maximum depth of recursion: '))                #Obtain depth limit of recursion
     construct(n)                                                                #Invoke construction function
-    transition(list(follow.keys())[random.randint(0,len(follow.keys())-1)],n,1,depth_limit) #Begin recursive descent
+    transition(list(follow.keys())[millis() % len(follow.keys())],n,1,depth_limit) #Begin recursive descent
 
 
 #Function to generate the actual tweets
 
 def whats_next():
     run()                                                                       #Invoke run function
-    print(final_output[:min(final_output-1,final_output.index('.')+1)])         #Print first sentence
-
+    ans=''
+    ans+=final_output[0].upper()
+    ans+=final_output[1:min(219,max(60,final_output.index('.')+1))]
+    if ans[len(ans)-1]==' ' and ans[len(ans)-1]!='.':
+        ans+='...'
+    else:
+        ans+='-'
+    api.update_status(ans)
 whats_next()
