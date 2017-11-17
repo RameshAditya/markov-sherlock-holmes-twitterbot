@@ -42,7 +42,6 @@ def tokenize(training_set_dir):
     return tokens                                                           #return tokens
 
 
-
 #Function to construct the n-token follow dictionary
 #returns a dictionary storing which words follow which words and how many times they do so
 
@@ -68,49 +67,59 @@ def construct(n=1):                                                         #loo
         if i+n<len(tokens):                                                 #if n-tokens ahead
             for j in range(0,n):
                 follow[' '.join(tokens[i+j:i+n])][tokens[i+n]]+=1           #increment frequency of occurrences
-    
-    
-def transition(string,n=1,depth=1,limit=50):
-    global final_output
+
+
+#Function to transition from one token to the next token
+
+def transition(string,order=1,depth=1,limit=50):                                #Parameters
+    global final_output                                                         #Declare use of global string final_output
     if depth>limit:
-        final_output+='. '
+        final_output+='. '                                                      #End recursion if limit is exceeded
         return
-    if string in follow:
-        follow_words=list(follow[string].keys())
-        follow_occur=list(follow[string].values())
+    if string in follow:                                                        #If the given string is a key in follow{}
+        follow_words=list(follow[string].keys())                                #Obtain the next possible words
+        follow_occur=list(follow[string].values())                              #Obtain the probabilites of the next possible words
         
-        cum_probs=[0]
-        cum_probs.append(follow_occur[0])
+        cum_probs=[0]                                                           #Declare list 'cum_probs': cumulative probabilities
+        cum_probs.append(follow_occur[0])                                       #Append probability of first next token
 
-        for i in range(1,len(follow_words)):
-            cum_probs.append(cum_probs[i-1]+follow_occur[i])
+
+        #Basically, we're appending likelihoods of next occurrences, and taking a random number and finding
+        #which segment it falls within, and picking the corresponding production.
+        #This method ensures that our next token is probabilistically likely to be more meaningful.
+        for i in range(1,len(follow_words)):                                    
+            cum_probs.append(cum_probs[i-1]+follow_occur[i])                    #Generate cumulative probs
+
         
-        random_ind=millis() % len(follow_words)
-        ind=0
-        for i in range(1,len(follow_words)+1):
-            if random_ind>=cum_probs[i-1] and random_ind<=cum_probs[i]:
-                ind=i-1
+        random_ind=millis() % len(follow_words)                                 #Generate random number using system time
+        ind=0                                                                   #Declare final index
+        for i in range(1,len(follow_words)+1):                                  #Iterate over all following words
+            if random_ind>=cum_probs[i-1] and random_ind<=cum_probs[i]:         #If the bucket has been found where the random number lies in
+                ind=i-1                                                         #Select the corresponding following token
                 break
-        final_output+=follow_words[ind]+' '
+        final_output+=follow_words[ind]+' '                                     #Concatenate it to final string
 
-        ct=0
-        i=0
+                                                                                #Time to move on to next token of given order
+        transition(' '.join(string.split(" ")[i:])+follow_words[ind],order,depth+1,limit)
 
-        while i<(len(string)):
-            if ' '.join(string.split(" ")[i:])+follow_words[ind] in list(follow.keys()):
-                ct=1
-                break
-            i+=1
-        transition(' '.join(string.split(" ")[i:])+follow_words[ind],n,depth+1,limit)
+                                                                                #If current token does not exist, exception handle
     else:
         transition(list(follow.keys())[random.randint(0,len(list(follow.keys()))-1)],n,1,limit)
 
-def run():
-    final_output=''
-    n=int(input("Enter size of histogram: "))
-    depth_limit=int(input('Enter recursive depth: '))
-    construct(n)
-    transition(list(follow.keys())[random.randint(0,len(follow.keys())-1)],n,1,depth_limit)
-    
+#Function to execute the above functions
 
-run()
+def run():
+    final_output=''                                                             #Final string
+    n=int(input("Enter order: "))                                               #Obtain order of histogram
+    depth_limit=int(input('Enter maximum depth of recursion: '))                #Obtain depth limit of recursion
+    construct(n)                                                                #Invoke construction function
+    transition(list(follow.keys())[random.randint(0,len(follow.keys())-1)],n,1,depth_limit) #Begin recursive descent
+
+
+#Function to generate the actual tweets
+
+def whats_next():
+    run()                                                                       #Invoke run function
+    print(final_output[:min(final_output-1,final_output.index('.')+1)])         #Print first sentence
+
+whats_next()
