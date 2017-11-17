@@ -9,6 +9,4 @@ NOTE: Works well for generating small sentences (albeit sometimes meaningless), 
 
 * Bad news is, it usually loses overall context after every sentence (or full stop) and sometimes mid-sentence too, due to the massive volume of the training set.
 
-~Probably would work best for projects like *"What would X tweet next?"*~
-
-Update: I have decided to do just that, to pick up the basics of text mining with Python, so stay tuned for future updates.
+This implementation parses through a Sherlock Holmes book, and predicts words. Twitter APIs were also used (Tweepy) but the project is not live since it tweets from my main account and another account requires another phone number.
